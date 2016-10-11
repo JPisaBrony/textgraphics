@@ -30,13 +30,15 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add directory="." />
+			<Add directory="./SDL-1.2.15/include" />
 		</Compiler>
 		<Linker>
-			<Add option="-mwindows -lpdcurses -lgdi32 -lcomdlg32" />
-			<Add directory="." />
+			<Add option="-mwindows -lpdcurses -lgdi32 -lcomdlg32 -lmingw32 -lSDLmain -lSDL -mwindows -lm -luser32 -lgdi32 -lwinmm -ldxguid" />
+			<Add directory="./lib" />
 		</Linker>
 		<Unit filename="curses.h" />
-		<Unit filename="firework.c">
+		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>
