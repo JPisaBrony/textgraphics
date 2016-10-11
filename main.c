@@ -2,7 +2,8 @@
 #include <curses.h>
 
 PDCEX SDL_Surface *pdc_screen;
-int width, height;
+int width, height, input_char, quit = 0;
+MEVENT event;
 
 int main(int argc, char* args[])
 {
@@ -17,21 +18,34 @@ int main(int argc, char* args[])
     height = info->current_h;
     pdc_screen = SDL_SetVideoMode(width, height, 0, SDL_SWSURFACE | SDL_ANYFORMAT | SDL_FULLSCREEN);
 
-    // init PDCurses
+    //pdc_screen = SDL_SetVideoMode(640, 480, 0, SDL_SWSURFACE | SDL_ANYFORMAT);
+
+    // init PDCurses with proper settings
     initscr();
     start_color();
     scrollok(stdscr, TRUE);
     init_pair(1, COLOR_WHITE + 8, COLOR_BLUE);
     bkgd(COLOR_PAIR(1));
+    nodelay(stdscr, FALSE);
+    keypad(stdscr, TRUE);
+    mousemask(ALL_MOUSE_EVENTS, NULL);
 
-    // basic text on screen
-    addstr("Basic PDCurses Window");
+    addstr("Basic PDCurses Window\n");
 
-    // wait for input
-    getch();
+    // main loop
+    while(!quit) {
+        input_char = wgetch(stdscr);
+        switch(input_char) {
+            case KEY_MOUSE:
+                if(nc_getmouse(&event) == OK) {
+                    quit = 1;
+                }
+                break;
+        }
+    }
+
+    // cleanup
     endwin();
-
-    // cleanup and quit
     SDL_Quit();
     return 0;
 }
