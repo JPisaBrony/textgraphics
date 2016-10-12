@@ -26,7 +26,7 @@ int main(int argc, char* args[])
     scrollok(stdscr, TRUE);
     init_pair(1, COLOR_WHITE + 8, COLOR_BLUE);
     bkgd(COLOR_PAIR(1));
-    nodelay(stdscr, FALSE);
+    nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
     mousemask(ALL_MOUSE_EVENTS, NULL);
 
@@ -34,7 +34,7 @@ int main(int argc, char* args[])
 
     // main loop
     while(!quit) {
-        input_char = wgetch(stdscr);
+        input_char = getch();
         switch(input_char) {
             case KEY_MOUSE:
                 if(nc_getmouse(&event) == OK) {
@@ -42,6 +42,8 @@ int main(int argc, char* args[])
                 }
                 break;
         }
+
+        addstr("Basic PDCurses Window\n");
     }
 
     // cleanup
