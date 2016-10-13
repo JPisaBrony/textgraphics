@@ -1,9 +1,14 @@
+#define NO_STDIO_REDIRECT
+#include <stdio.h>
+#include <string.h>
 #include <SDL/SDL.h>
 #include <curses.h>
 
 PDCEX SDL_Surface *pdc_screen;
 int width, height, input_char, quit = 0;
 MEVENT event;
+char **image_buffer;
+int num_lines = 0;
 
 void update() {
     refresh();
@@ -717,8 +722,81 @@ void draw_pony() {
     update();
 }
 
+void read_ascii(char *filename) {
+    char ch, *line;
+    int i = 0, line_length = 0, line_end_flag = 0;
+
+    FILE *fp = fopen(filename, "r");
+
+    // check DAT pointer
+    if(fp == NULL) {
+        printf("Error opening file");
+        exit(1);
+    }
+
+    // read entire file
+    while(ch != EOF) {
+        ch = fgetc(fp);
+        // check if it is the end of the line
+        if(ch == '\n') {
+            // increment number of lines
+            num_lines++;
+            // stop incrementing the length of the line
+            line_end_flag = 1;
+        }
+        if(line_end_flag == 0)
+            // increment number of lines
+            line_length++;
+    }
+    // get back to the beginning of the file
+    fseek(fp, 0, SEEK_SET);
+
+    // alloocate DAT memory
+    image_buffer = malloc(sizeof(char*) * num_lines);
+    line = malloc(sizeof(char) * line_length + 1);
+
+    // re read the whole file but this time line by line
+    while(fgets(line, line_length + 1, fp)) {
+        // check if the line is a new line character
+        if(*line != '\n') {
+            // allocate the proper memory
+            image_buffer[i] = malloc(line_length + 1);
+            // copy the memory into the image buffer
+            strncpy(image_buffer[i], line, line_length);
+            i++;
+        }
+    }
+
+    // cleanup
+    fclose(fp);
+    free(line);
+}
+
+void print_file() {
+    int i;
+    // iterate through each line in the string buffer
+    for(i = 0; i < num_lines; i++) {
+        // check if it is the end of the image frame
+        if(*image_buffer[i] == 'E') {
+            // refresh the image
+            refresh();
+            delay_output(30);
+        }
+        // add the line to the screen from the image buffer
+        printw(image_buffer[i]);
+        // add new line character to get to the next line
+        printw("\n");
+    }
+}
+
 int main(int argc, char* args[])
 {
+    // make SDL not write stdout.txt and stderr to the filesystem
+    freopen("CON", "w", stdout);
+    freopen("CON", "w", stderr);
+
+    // read the file
+    read_ascii("all.txt");
     // initialize SDL and quit if it failed
     if (SDL_Init(SDL_INIT_VIDEO) == -1)
         exit(1);
@@ -742,7 +820,7 @@ int main(int argc, char* args[])
     keypad(stdscr, TRUE);
     mousemask(ALL_MOUSE_EVENTS, NULL);
 
-    addstr("Basic PDCurses Window\n");
+    //addstr("Basic PDCurses Window\n");
 
     // main loop
     while(!quit) {
@@ -755,11 +833,13 @@ int main(int argc, char* args[])
                 break;
         }
 
-        draw_pony();
+        // print out the image from the image buffer
+        print_file();
     }
 
     // cleanup
     endwin();
     SDL_Quit();
+    free(image_buffer);
     return 0;
 }
