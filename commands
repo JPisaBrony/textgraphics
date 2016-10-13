@@ -1,0 +1,6 @@
+convert -verbose -coalesce p-twi-trot-right.gif twi.png
+for i in *.png; do $(convert $i jpg:- | jp2a --width=150 - > $i".txt"); done
+#for i in *.txt; do $(sed -i -e 's/^/printw("/' $i); done
+#for i in *.txt; do $(sed -i -e 's/$/\\n\"\)\;/' $i); done
+#for i in *.txt; do $((cat $i; echo "update();") >> all.txt); done
+for i in *.txt; do $((cat $i; echo 'E';) >> all.txt); done
