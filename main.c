@@ -726,6 +726,7 @@ void read_ascii(char *filename) {
     char ch, *line;
     int i = 0, line_length = 0, line_end_flag = 0;
 
+    // open the file in read mode to handle end of lines
     FILE *fp = fopen(filename, "r");
 
     // check DAT pointer
@@ -751,7 +752,7 @@ void read_ascii(char *filename) {
     // get back to the beginning of the file
     fseek(fp, 0, SEEK_SET);
 
-    // alloocate DAT memory
+    // allocate DAT memory
     image_buffer = malloc(sizeof(char*) * num_lines);
     line = malloc(sizeof(char) * line_length + 1);
 
@@ -791,7 +792,7 @@ void print_file() {
 
 int main(int argc, char* args[])
 {
-    // make SDL not write stdout.txt and stderr to the filesystem
+    // make SDL not write stdout.txt and stderr.txt to the filesystem
     freopen("CON", "w", stdout);
     freopen("CON", "w", stderr);
 
