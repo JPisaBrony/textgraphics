@@ -68,7 +68,7 @@ void print_file() {
         if(*image_buffer[i] == 'E') {
             // refresh the image
             refresh();
-            delay_output(30);
+            delay_output(50);
         } else {
             // add the line to the screen from the image buffer
             printw(image_buffer[i]);
