@@ -41,16 +41,18 @@ void read_ascii(char *filename) {
 
     // allocate DAT memory
     image_buffer = malloc(sizeof(char*) * num_lines);
-    line = malloc(sizeof(char) * line_length + 1);
+    line = malloc(sizeof(char) * line_length);
 
     // re read the whole file but this time line by line
     while(fgets(line, line_length + 1, fp)) {
         // check if the line is a new line character
         if(*line != '\n') {
             // allocate the proper memory
-            image_buffer[i] = malloc(line_length + 1);
+            image_buffer[i] = malloc(sizeof(char) * line_length + 1);
             // copy the memory into the image buffer
             strncpy(image_buffer[i], line, line_length);
+            // append null character
+            image_buffer[i][line_length] = '\0';
             i++;
         }
     }
